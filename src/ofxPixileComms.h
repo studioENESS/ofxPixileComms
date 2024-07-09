@@ -1,11 +1,15 @@
 #pragma once
 
 #include <vector>
+#include <cstring>
 
 #ifdef _WIN32
 #include <WinSock2.h>
 #define socklen_t int
 #else
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <sys/socket.h> 
 #define SOCKET int
 #define SOCKET_ERROR -1

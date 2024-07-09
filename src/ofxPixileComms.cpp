@@ -14,8 +14,6 @@ ofxPixileComms::~ofxPixileComms()
 
 void ofxPixileComms::start()
 {
-	//if (m_bScanForDevices) {
-
 	BYTE buf[12];
 	memset(buf, '\0', 12);
 	buf[0] = 'E';
