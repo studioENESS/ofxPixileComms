@@ -23,6 +23,6 @@ class ofApp: public ofBaseApp{
 	private:
 		ofxPixileComms pixile;
 		ofSoundPlayer sound;
-		ofColor color;
-		bool soundOn;
+		ofColor color, off;
+		bool soundsOn;
 };

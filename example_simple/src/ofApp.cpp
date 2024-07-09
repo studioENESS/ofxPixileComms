@@ -5,6 +5,7 @@
 void ofApp::setup(){
 
 	color = ofColor(0, ofRandom(80, 175), 0, 255);
+	off = ofColor(0, 0, 0, 255);
 
 	sound.load("HexagonalDepth.wav");
 	sound.setVolume(0.25);
@@ -21,9 +22,9 @@ void ofApp::setup(){
 void ofApp::update(){
 	pixile.update();
 
-	if (pixile.SoundsOn() != soundOn) {
-		soundOn = pixile.SoundsOn();
-		if (soundOn) {
+	if (pixile.SoundsOn() != soundsOn) {
+		soundsOn = pixile.SoundsOn();
+		if (soundsOn) {
 			if (!sound.isPlaying()) sound.play();
 		}
 		else {
@@ -35,8 +36,9 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
-	ofSetColor(color);
+void ofApp::draw() {
+	(pixile.LightsOn())? ofSetColor(color) : ofSetColor(off);
+	
 	ofFill();
 	ofDrawRectangle(0,0,ofGetWidth(),ofGetHeight());
 }
