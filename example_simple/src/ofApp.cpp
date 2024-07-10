@@ -6,7 +6,7 @@ void ofApp::setup(){
 
 	color = ofColor(0, ofRandom(80, 175), 0, 255);
 
-	sound.load("HexagonalDepth.mp3");
+	sound.load("HexagonalDepth.wav");
 	sound.setVolume(0.25);
 	sound.setLoop(true);
 
