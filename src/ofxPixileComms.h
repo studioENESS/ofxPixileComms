@@ -45,7 +45,7 @@ struct SPixileMessage
 	int param[4]{0,0,0,0};
 };
 
-typedef void (*fpMessageCallbackFunc)(SPixileMessage*);
+typedef void (*fpMessageCallbackFunc)(SPixileMessage*, void*);
 
 class ofxPixileComms
 {
@@ -76,7 +76,7 @@ public:
 	bool SoundsOn() const;
 	void SoundsOn(bool val);
 
-	void SetMessageHandler(fpMessageCallbackFunc pFunc);
+	void SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserData);
 
 protected:
 	int HandleScanResponse(int recv_len, socklen_t slen);
@@ -97,6 +97,7 @@ private:
 	bool m_bSoundsOn{ true };
 
 	fpMessageCallbackFunc m_pMessageHandler = nullptr;
+	void* m_pUserData = nullptr;
 
 };
 

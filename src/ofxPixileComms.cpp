@@ -249,9 +249,10 @@ bool ofxPixileComms::SoundsOn() const
 	return m_bSoundsOn;
 }
 
-void ofxPixileComms::SetMessageHandler(fpMessageCallbackFunc pFunc)
+void ofxPixileComms::SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserData)
 {
 	m_pMessageHandler = pFunc;
+	m_pUserData = pUserData;
 }
 
 int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
@@ -326,7 +327,9 @@ int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
 				pMsg->_id = buf[12];
 				memcpy(pMsg->param, buf + 13, sizeof(int) * 4);
 				if(m_pMessageHandler)
-					m_pMessageHandler(pMsg);
+					m_pMessageHandler(pMsg, m_pUserData);
+					
+				delete pMsg;
 
 				break;
 			}
