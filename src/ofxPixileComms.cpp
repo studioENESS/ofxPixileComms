@@ -249,6 +249,11 @@ bool ofxPixileComms::SoundsOn() const
 	return m_bSoundsOn;
 }
 
+void ofxPixileComms::SetMessageHandler(fpMessageCallbackFunc pFunc)
+{
+	m_pMessageHandler = pFunc;
+}
+
 int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
 {
 
@@ -311,6 +316,18 @@ int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
 			}
 			case 0x06: // Game Message
 			{
+				break;
+			}
+			case 0x07: // Data Message
+			{
+				//int32_t dataType = buf[12];
+				//uint32_t* pData[4] = { 0,0,0,0 };
+				SPixileMessage* pMsg = new SPixileMessage();
+				pMsg->_id = buf[12];
+				memcpy(pMsg->param, buf + 13, sizeof(int) * 4);
+				if(m_pMessageHandler)
+					m_pMessageHandler(pMsg);
+
 				break;
 			}
 			default:

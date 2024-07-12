@@ -30,6 +30,7 @@
 #define MSG_SOUNDS 0x05
 #define MSG_GAME 0x06
 
+
 struct SPixilePeer
 {
 	int _id;
@@ -41,8 +42,10 @@ struct SPixilePeer
 struct SPixileMessage
 {
 	int32_t _id{ -1 };
-	float param[4]{ 0.f };
+	int param[4]{0,0,0,0};
 };
+
+typedef void (*fpMessageCallbackFunc)(SPixileMessage*);
 
 class ofxPixileComms
 {
@@ -73,6 +76,8 @@ public:
 	bool SoundsOn() const;
 	void SoundsOn(bool val);
 
+	void SetMessageHandler(fpMessageCallbackFunc pFunc);
+
 protected:
 	int HandleScanResponse(int recv_len, socklen_t slen);
 
@@ -90,6 +95,8 @@ private:
 
 	bool m_bLightsOn{ true };
 	bool m_bSoundsOn{ true };
+
+	fpMessageCallbackFunc m_pMessageHandler = nullptr;
 
 };
 
