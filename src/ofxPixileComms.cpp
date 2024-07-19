@@ -43,8 +43,6 @@ void ofxPixileComms::start()
 
 void ofxPixileComms::SetupSockets()
 {
-	int slen;
-	slen = sizeof(sender);
 
 #ifdef _WIN32
 	//Initialise winsock
@@ -63,7 +61,6 @@ void ofxPixileComms::SetupSockets()
 	if ((browserSocket = socket(PF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET) {
 		//ns::debug::write("Could not create socket : %d", WSAGetLastError());
 	}
-
 
 	//Prepare the sockaddr_in structure
 	sender.sin_family = AF_INET;
@@ -262,11 +259,6 @@ int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
 	recv_len = recvfrom(browserSocket, (char*)buf, BUFLEN, 0, (struct sockaddr*)&browseraddr, &slen);
 	if (recv_len != SOCKET_ERROR) {
 
-
-		/* if (m_bScanForDevices == false)5
-			 return 0;*/
-			 //print details of the client/peer and the data received
-		int dataOffset = 12;
 		char  ident[9];
 		memcpy(ident, buf, 8);
 		ident[8] = 0x00;
