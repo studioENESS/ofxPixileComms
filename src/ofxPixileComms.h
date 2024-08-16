@@ -63,7 +63,7 @@ public:
 	bool SendSoundsMessage(bool status);
 	bool SendGameMessage(int gameID, int msgID, float param1 = 0.f, float param2 = 0.f, float param3 = 0.f, float param4 = 0.f);
 	void SendDataMessage(uint8_t msgID, uint8_t gameID, int32_t msgDataSize, void* msgData);
-
+	void SendClientMessage(uint8_t msgID, int32_t* params);
 	int Server_port() const;
 	void Server_port(int val);
 	int Computer_id() const;

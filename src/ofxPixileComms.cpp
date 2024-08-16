@@ -158,6 +158,51 @@ bool ofxPixileComms::SendGameMessage(int gameID, int msgID, float param1 /*= 0.f
 	return true;
 }
 
+void ofxPixileComms::SendClientMessage(uint8_t msgID, int32_t* params)
+{
+
+	int32_t* pData[4] = { 0,0,0,0 };
+	pData[0] = &params[0];
+	pData[1] = &params[1];
+	pData[2] = &params[2];
+	pData[3] = &params[3];
+
+	BYTE* buf;// [12];
+	int msgSize = 12 + (sizeof(int32_t) * 4) + 1;
+	buf = new BYTE[msgSize];
+	memset(buf, '\0', msgSize);
+	buf[0] = 'E';
+	buf[1] = 'n';
+	buf[2] = 'e';
+	buf[3] = 's';
+	buf[4] = 's';
+	buf[5] = 'n';
+	buf[6] = 'e';
+	buf[7] = 't';
+	buf[8] = 0x00;
+	buf[9] = 0x00;
+	buf[10] = 0x07;
+	buf[11] = 1;
+	buf[12] = msgID;
+	//buf[12] = 0x00;
+	for (int i = 0; i < 4; i++)
+	{
+		memcpy(buf + 13 + (i * sizeof(int32_t)), pData[i], sizeof(int32_t));
+	}
+
+	browseraddr.sin_family = PF_INET;
+	//si_other.sin_addr.s_addr = inet_addr(m_sSrcIP.c_str());
+	browseraddr.sin_addr.s_addr = inet_addr("255.255.255.255");
+	browseraddr.sin_port = htons(_server_port);
+	int slen = sizeof(browseraddr);
+	if (sendto(browserSocket, (char*)buf, msgSize, 0, (struct sockaddr*)&browseraddr, slen) == SOCKET_ERROR) {
+		//ns::debug::write_line("sendto() failed with error code : %d", WSAGetLastError());
+		//exit(EXIT_FAILURE);
+	}
+
+	delete[]buf;
+}
+
 void ofxPixileComms::SendDataMessage(uint8_t msgID, uint8_t gameID, int32_t msgDataSize, void* msgData)
 {
 	BYTE* buf;// [12];
