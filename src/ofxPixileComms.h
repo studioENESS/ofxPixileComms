@@ -42,7 +42,15 @@ struct SPixilePeer
 struct SPixileMessage
 {
 	int32_t _id{ -1 };
-	int param[4]{0,0,0,0};
+	int param[4]{ 0,0,0,0 };
+
+	SPixileMessage() = default;
+	SPixileMessage(int32_t id, int p0, int p1, int p2, int p3) : _id(id) {
+		param[0] = p0;
+		param[1] = p1;
+		param[2] = p2;
+		param[3] = p3;
+	}
 };
 
 typedef void (*fpMessageCallbackFunc)(SPixileMessage*, void*);
