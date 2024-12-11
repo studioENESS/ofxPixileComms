@@ -33,24 +33,24 @@
 
 struct SPixilePeer
 {
-	int _id;
-	int _port;
-	uint8_t _ip[4];
-	bool _is_master;
+    int _id;
+    int _port;
+    uint8_t _ip[4];
+    bool _is_master;
 };
 
 struct SPixileMessage
 {
-	int32_t _id{ -1 };
-	int param[4]{ 0,0,0,0 };
+    int32_t _id{ -1 };
+    int param[4]{ 0,0,0,0 };
 
-	SPixileMessage() = default;
-	SPixileMessage(int32_t id, int p0, int p1, int p2, int p3) : _id(id) {
-		param[0] = p0;
-		param[1] = p1;
-		param[2] = p2;
-		param[3] = p3;
-	}
+    SPixileMessage() = default;
+    SPixileMessage(int32_t id, int p0, int p1, int p2, int p3) : _id(id) {
+        param[0] = p0;
+        param[1] = p1;
+        param[2] = p2;
+        param[3] = p3;
+    }
 };
 
 typedef void (*fpMessageCallbackFunc)(SPixileMessage*, void*);
@@ -58,54 +58,54 @@ typedef void (*fpMessageCallbackFunc)(SPixileMessage*, void*);
 class ofxPixileComms
 {
 public:
-	ofxPixileComms();
-	~ofxPixileComms();
+    ofxPixileComms();
+    ~ofxPixileComms();
 
-	void start();
-	void SetupSockets();
-	bool SetSocketBlockingEnabled(int fd, bool bBlocking);
+    void start();
+    void SetupSockets();
+    bool SetSocketBlockingEnabled(int fd, bool bBlocking);
 
 
-	bool update(void);
-	bool SendLightsMessage(bool status);
-	bool SendSoundsMessage(bool status);
-	bool SendGameMessage(int gameID, int msgID, float param1 = 0.f, float param2 = 0.f, float param3 = 0.f, float param4 = 0.f);
-	void SendDataMessage(uint8_t msgID, uint8_t gameID, int32_t msgDataSize, void* msgData);
-	void SendClientMessage(uint8_t msgID, int32_t* params);
-	int Server_port() const;
-	void Server_port(int val);
-	int Computer_id() const;
-	void Computer_id(int val);
-	bool Master() const;
-	void Master(bool val);
+    bool update(void);
+    bool SendLightsMessage(bool status);
+    bool SendSoundsMessage(bool status);
+    bool SendGameMessage(int gameID, int msgID, float param1 = 0.f, float param2 = 0.f, float param3 = 0.f, float param4 = 0.f);
+    void SendDataMessage(uint8_t msgID, uint8_t gameID, int32_t msgDataSize, void* msgData);
+    void SendClientMessage(uint8_t msgID, int32_t* params);
+    int Server_port() const;
+    void Server_port(int val);
+    int Computer_id() const;
+    void Computer_id(int val);
+    bool Master() const;
+    void Master(bool val);
 
-	bool LightsOn() const;
-	void LightsOn(bool val);
-	bool SoundsOn() const;
-	void SoundsOn(bool val);
+    bool LightsOn() const;
+    void LightsOn(bool val);
+    bool SoundsOn() const;
+    void SoundsOn(bool val);
 
-	void SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserData);
+    void SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserData);
 
 protected:
-	int HandleScanResponse();
+    int HandleScanResponse();
 
-	void SetPeerInfo(uint8_t senderID, bool bServer);
+    void SetPeerInfo(uint8_t senderID, bool bServer);
 
 private:
-	int _server_port{ 3637 };
+    int _server_port{ 3637 };
 
-	int _computer_id;
-	bool m_bMaster;
+    int _computer_id;
+    bool m_bMaster;
 
-	SOCKET browserSocket;
-	sockaddr_in sender, browseraddr;
-	std::vector<SPixilePeer*> m_vecPeer;
+    SOCKET browserSocket;
+    sockaddr_in sender, browseraddr;
+    std::vector<SPixilePeer*> m_vecPeer;
 
-	bool m_bLightsOn{ true };
-	bool m_bSoundsOn{ true };
+    bool m_bLightsOn{ true };
+    bool m_bSoundsOn{ true };
 
-	fpMessageCallbackFunc m_pMessageHandler = nullptr;
-	void* m_pUserData = nullptr;
+    fpMessageCallbackFunc m_pMessageHandler = nullptr;
+    void* m_pUserData = nullptr;
 
 };
 
