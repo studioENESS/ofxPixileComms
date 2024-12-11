@@ -1,5 +1,5 @@
 #pragma once
-
+#include "ofLog.h"
 #include <vector>
 #include <cstring>
 
@@ -87,7 +87,7 @@ public:
 	void SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserData);
 
 protected:
-	int HandleScanResponse(int recv_len, socklen_t slen);
+	int HandleScanResponse();
 
 	void SetPeerInfo(uint8_t senderID, bool bServer);
 

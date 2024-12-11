@@ -88,7 +88,6 @@ void ofxPixileComms::SetupSockets()
 		//exit(EXIT_FAILURE);
 	}
 
-
 	SetSocketBlockingEnabled(browserSocket, false);
 }
 
@@ -103,18 +102,14 @@ bool ofxPixileComms::SetSocketBlockingEnabled(int fd, bool bBlocking)
 	if (flags < 0) return false;
 	flags = bBlocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
 	return (fcntl(fd, F_SETFL, flags) == 0) ? true : false;
-
 #endif
 }
 
 bool ofxPixileComms::update(void)
 {
-	static int slen = sizeof(browseraddr);
-	int recv_len = 0;
-	recv_len = HandleScanResponse(recv_len, slen);
+	int recv_len = HandleScanResponse();
 
 	return false;
-
 }
 
 bool ofxPixileComms::SendLightsMessage(bool status)
@@ -297,77 +292,71 @@ void ofxPixileComms::SetMessageHandler(fpMessageCallbackFunc pFunc, void* pUserD
 	m_pUserData = pUserData;
 }
 
-int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
+int ofxPixileComms::HandleScanResponse()
 {
-
+	socklen_t slen = sizeof(browseraddr);
 	BYTE buf[BUFLEN];
-	recv_len = recvfrom(browserSocket, (char*)buf, BUFLEN, 0, (struct sockaddr*)&browseraddr, &slen);
-	if (recv_len != SOCKET_ERROR) {
+	int total_recv_len = 0;
 
-		char  ident[9];
+	while (true) {
+		int recv_len = recvfrom(browserSocket, (char*)buf, BUFLEN, 0, (struct sockaddr*)&browseraddr, &slen);
+		if (recv_len <= 0) {
+			if (recv_len < 0) { // SOCKET_ERROR
+				#ifdef WIN32
+				ofLog(OF_LOG_ERROR) << "recvfrom() SOCKET_ERROR, " << WSAGetLastError();
+				#else
+				ofLog(OF_LOG_ERROR) << "recvfrom() SOCKET_ERROR, " << errno;
+				#endif
+			}
+			break; // No messages ...
+		}
+
+		total_recv_len += recv_len;
+
+		char ident[9];
 		memcpy(ident, buf, 8);
 		ident[8] = 0x00;
 		std::string sIdent(ident);
-		if (sIdent == std::string("Enessnet"))
-		{
+		if (sIdent == std::string("Enessnet")) {
 			BYTE msgType = buf[10];
-			BYTE  senderID = buf[11];
+			BYTE senderID = buf[11];
+
 			//ns::debug::write_line("Type: %x, senderID: %x", msgType, senderID);
 
-			switch (msgType)
-			{
-			case 0x01: // Alive/Ident.
-			{
+			switch (msgType) {
+			case 0x01: // Alive, Identify
 				SetPeerInfo(senderID, false);
 				break;
-			}
 			case 0x02: // Identify As Server
-			{
 				SetPeerInfo(senderID, true);
 				break;
-			}
 			case 0x03: // Send/receive List.
 			{
 				std::string listData;
 				int32_t strSize;
 				memcpy(&strSize, buf + 12, sizeof(int32_t));
 				char* cStr = new char[strSize];
-
 				memcpy(cStr, buf + 12 + sizeof(int32_t), sizeof(int8_t) * strSize);
-				// do something with the xml string.
 				listData = std::string(cStr);
 				delete[] cStr;
-
 				break;
 			}
 			case 0x04: // Lights On/Off
-			{
-				int8_t status = buf[12];
-				m_bLightsOn = status;
+				m_bLightsOn = buf[12];
 				break;
-			}
 			case 0x05: // Sounds On/Off
-			{
-				int8_t status = buf[12];
-				m_bSoundsOn = status;
+				m_bSoundsOn = buf[12];
 				break;
-			}
 			case 0x06: // Game Message
-			{
 				break;
-			}
 			case 0x07: // Data Message
 			{
-				//int32_t dataType = buf[12];
-				//uint32_t* pData[4] = { 0,0,0,0 };
 				SPixileMessage* pMsg = new SPixileMessage();
 				pMsg->_id = buf[12];
 				memcpy(pMsg->param, buf + 13, sizeof(int) * 4);
-				if(m_pMessageHandler)
+				if (m_pMessageHandler)
 					m_pMessageHandler(pMsg, m_pUserData);
-					
 				delete pMsg;
-
 				break;
 			}
 			default:
@@ -375,15 +364,10 @@ int ofxPixileComms::HandleScanResponse(int recv_len, socklen_t slen)
 			}
 		}
 	}
-	else
-	{
-		auto wsaLastError = WSAGetLastError();
-		if (WSAGetLastError() != WSAEWOULDBLOCK)
-			std::cout << "recvfrom() failed with error code : " << wsaLastError << std::endl;
 
-	}
-	return recv_len;
+	return total_recv_len;
 }
+
 
 void ofxPixileComms::SetPeerInfo(uint8_t senderID, bool bServer)
 {
