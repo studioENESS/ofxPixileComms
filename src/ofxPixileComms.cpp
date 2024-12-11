@@ -301,6 +301,7 @@ int ofxPixileComms::HandleScanResponse()
     while (true) {
         int recv_len = recvfrom(browserSocket, (char*)buf, BUFLEN, 0, (struct sockaddr*)&browseraddr, &slen);
         if (recv_len <= 0) {
+            /* EAGAIN (11)
             if (recv_len == SOCKET_ERROR) {
                 #ifdef WIN32
                 ofLog(OF_LOG_ERROR) << "recvfrom(), " << WSAGetLastError();
@@ -308,6 +309,7 @@ int ofxPixileComms::HandleScanResponse()
                 ofLog(OF_LOG_ERROR) << "recvfrom(), " << errno;
                 #endif
             }
+            */
             break; // No messages ...
         }
 
